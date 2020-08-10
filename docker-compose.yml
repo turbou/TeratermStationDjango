@@ -1,0 +1,27 @@
+version: '3'
+
+services:
+  django:
+    image: tts-django:1.0.0
+    build:
+      context: ./django
+    container_name: tts-django
+    restart: always
+    command: python /project/tts_django/manage.py runserver 0.0.0.0:8081
+    volumes:
+      - ./tts_django:/project/tts_django
+    expose:
+      - "8081"
+
+  nginx:
+    image: nginx:1.19.1
+    container_name: nginx
+    restart: always
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx/conf:/etc/nginx/conf.d
+      - ./tts_django/static:/usr/share/nginx/html/static
+    depends_on:
+      - django
+
